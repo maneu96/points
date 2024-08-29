@@ -17,8 +17,10 @@ pub mod points {
     }
 
     pub fn transfer_points(ctx: Context<TransferPoints>, amount: u32) -> Result<()> {
-        require!(ctx.accounts.from.authority == ctx.accounts.signer.key(), Errors::SignerIsNotAuthority);
-        require!(ctx.accounts.from.points >= amount, Errors::InsufficientPoints);
+       /*  require!(ctx.accounts.from.authority == ctx.accounts.signer.key(), Errors::SignerIsNotAuthority);
+        require!(ctx.accounts.from.points >= amount, Errors::InsufficientPoints); */ // This can be done using Anchor constraints, which is a macro
+
+
 
         ctx.accounts.from.points -= amount;
         ctx.accounts.to.points += amount;
@@ -41,13 +43,16 @@ pub struct Initialize<'info> {
 
 
 #[derive(Accounts)]
+#[instruction(amount:u32)]
 pub struct TransferPoints<'info> {
-    #[account(mut)]
+    #[account(mut,
+        has_one = authority @ Errors::SignerIsNotAuthority, // ensures that the signer of the tx is in fact allowed to send points from the account, otherwise throws an error
+        constraint = from.points >= amount @ Errors::InsufficientPoints)] // ensures that the account has enough points, otherwise throws an error
     from: Account<'info, Player>,
     #[account(mut)]
     to: Account<'info, Player>,
     #[account(mut)]
-    signer: Signer<'info>,
+    authority: Signer<'info>,
 }
 
 

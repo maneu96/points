@@ -71,7 +71,7 @@ describe("points", () => {
     .accounts({
       from: playerAlice,
       to: playerBob,
-      signer: alice.publicKey,
+      authority: alice.publicKey
     }).signers([alice])
     .rpc();
 
@@ -88,7 +88,7 @@ describe("points", () => {
       await program.methods.transferPoints(5).accounts({
         from: playerBob,
         to: playerMallory,
-        signer: mallory.publicKey
+        authority: mallory.publicKey
       }).signers([mallory])
       .rpc();
     }
@@ -104,7 +104,7 @@ describe("points", () => {
       await program.methods.transferPoints(20).accounts({
         from: playerBob,
         to:playerAlice,
-        signer: bob.publicKey
+        authority: bob.publicKey
       }).signers([bob])
       .rpc();
     }
